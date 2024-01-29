@@ -51,6 +51,7 @@ class FlashCardGame:
 		self.answer_button.grid(row=0, column=0, padx=20)
 
 		self.next_button = tk.Button(self.button_frame, text = "Next", command = self.next)
+		self.next_button.bind("<Shift-Return>", self.next)
 		self.next_button.grid(row = 0, column=1)
 
 		self.hint_button = tk.Button(self.button_frame, text = "Hint", command = self.hint)
@@ -58,6 +59,9 @@ class FlashCardGame:
 
 		self.audio_button = tk.Button(self.button_frame, text= "Audio", command = self.speak)
 		self.audio_button.grid(row=1, column=1, pady = 10)
+
+        #Key Bindings or keyboard shortcuts
+		self.keyPress()
 
 
 
@@ -84,7 +88,7 @@ class FlashCardGame:
 		self.count = len(self.words_phrases)
 
 
-	def next(self):
+	def next(self,event=None):
 		#Clear Screan
 		self.answer_label.config(text="")
 		self.user_entry.delete(0,tk.END)
@@ -97,14 +101,14 @@ class FlashCardGame:
 
 
 
-	def answer(self):
+	def answer(self,event=None):
 		if (self.user_entry.get().strip().capitalize() == self.words_phrases[self.rand_word][1].strip().capitalize()) and (len(self.user_entry.get()) > 0):
 			self.answer_label.config(text=f"Correct! {self.words_phrases[self.rand_word][0]} is {self.user_entry.get().strip().capitalize()}")
 		else:
 			self.answer_label.config(text=f"Incorrect! {self.words_phrases[self.rand_word][0]} is not {self.user_entry.get().strip().capitalize()}")
 
 
-	def hint(self):
+	def hint(self,event=None):
 
 		if self.hint_count < len(self.words_phrases[self.rand_word][1]):
 			self.hinter = self.hinter + self.words_phrases[self.rand_word][1].strip()[self.hint_count]
@@ -115,13 +119,23 @@ class FlashCardGame:
 			pass
 
 
-	def speak(self):
+	def speak(self,event=None):
 		#object creation
 		engine = pyt.init()
 		engine.setProperty('voice',"french")
 		engine.setProperty('rate',120)
 		engine.say(self.words_phrases[self.rand_word][0])
 		engine.runAndWait()
+
+	def keyPress(self):
+		"""
+		Function to handle keyboard shortcuts for 
+		the button presses
+		"""
+		self.master.bind("<Return>", self.answer)
+		self.master.bind("<Shift-Return>", self.next)
+		self.master.bind("<Control-Key-1>",self.hint)
+		self.master.bind("<Control-Key-2>",self.speak)
 
 
 
